@@ -65,7 +65,7 @@ export const FIELD_TO_ENGINE = {
 };
 
 // Convert editor inputs to engine params (only changed fields)
-function toEngineParams(editorInputs, defaults) {
+export function toEngineParams(editorInputs, defaults) {
   const params = {};
   for (const [k, val] of Object.entries(editorInputs)) {
     const ek = FIELD_TO_ENGINE[k];
@@ -334,11 +334,11 @@ export const INPUT_SECTIONS = [
   { id:"you", label:"\u{1F464} About You", fields:[
     {key:"userName",label:"Your Name",min:0,max:0,step:0,fmt:"text",help:"Shown in headers"},
     {key:"partnerName",label:"Partner Name",min:0,max:0,step:0,fmt:"text",help:"Shown in income labels"},
-    {key:"weddingEnabled",label:"Getting Married?",min:0,max:0,step:0,fmt:"text",help:"'true' or 'false'"},
-    {key:"partnerEnabled",label:"Partner Income?",min:0,max:0,step:0,fmt:"text",help:"'true' or 'false'"},
-    {key:"guardEnabled",label:"Military/Guard?",min:0,max:0,step:0,fmt:"text",help:"'true' or 'false'"},
-    {key:"kidsEnabled",label:"Planning Kids?",min:0,max:0,step:0,fmt:"text",help:"'true' or 'false'"},
-    {key:"petsEnabled",label:"Have Pets?",min:0,max:0,step:0,fmt:"text",help:"'true' or 'false'"},
+    {key:"weddingEnabled",label:"Getting Married?",min:0,max:0,step:0,fmt:"bool",help:"Toggle wedding planning on/off"},
+    {key:"partnerEnabled",label:"Partner Income?",min:0,max:0,step:0,fmt:"bool",help:"Toggle partner/spouse income"},
+    {key:"guardEnabled",label:"Military/Guard?",min:0,max:0,step:0,fmt:"bool",help:"Toggle military/guard income"},
+    {key:"kidsEnabled",label:"Planning Kids?",min:0,max:0,step:0,fmt:"bool",help:"Toggle kid expenses"},
+    {key:"petsEnabled",label:"Have Pets?",min:0,max:0,step:0,fmt:"bool",help:"Toggle pet expenses"},
     {key:"birthYear",label:"Birth Year",min:1950,max:2010,step:1,fmt:"int",help:"Your year of birth"},
     {key:"startYear",label:"Career Start Year",min:2015,max:2045,step:1,fmt:"int",help:"Year you begin working"},
     {key:"retireAge",label:"Retirement Age",min:40,max:80,step:1,fmt:"int",help:"When you stop working"},
@@ -514,7 +514,7 @@ export const INPUT_SECTIONS = [
     {key:"personalCareMarriageMult",label:"Care Marriage Mult",min:1,max:3,step:0.1,fmt:"int",help:"Personal care increase after marriage"},
   ]},
   { id:"rental", label:"\u{1F3E2} Rental Property", fields:[
-    {key:"rentalEnabled",label:"Enable Rental",min:0,max:0,step:0,fmt:"text",help:"'true' or 'false'"},
+    {key:"rentalEnabled",label:"Enable Rental",min:0,max:0,step:0,fmt:"bool",help:"Toggle rental property investment"},
     {key:"rentalPurchaseYear",label:"Purchase Year",min:2028,max:2050,step:1,fmt:"int",help:"Calendar year to buy"},
     {key:"rentalPrice",label:"Purchase Price",min:100000,max:600000,step:10000,fmt:"$K",help:"Rental property price"},
     {key:"rentalDownPct",label:"Down Payment %",min:0.10,max:0.30,step:0.05,fmt:"%",help:"Down payment for rental"},

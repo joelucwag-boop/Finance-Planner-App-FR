@@ -17,6 +17,33 @@ const InputRow = ({field, value, onChange}) => {
     setEditing(false);
   };
 
+  // Boolean toggle switch
+  if (f === "bool") {
+    const isOn = value === true || value === "true";
+    return (
+      <div style={{padding:"5px 0",borderBottom:`1px solid ${C.border}15`}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:11,color:C.textMid,fontWeight:400}}>{label}</span>
+          <button onClick={() => onChange(!isOn)}
+            style={{
+              width:40,height:22,borderRadius:11,border:"none",cursor:"pointer",
+              background:isOn?C.green:C.border,
+              position:"relative",transition:"background 0.2s",
+              display:"flex",alignItems:"center",padding:2,
+            }}>
+            <div style={{
+              width:18,height:18,borderRadius:9,background:"#fff",
+              transition:"transform 0.2s",
+              transform:isOn?"translateX(18px)":"translateX(0)",
+              boxShadow:"0 1px 3px rgba(0,0,0,0.3)",
+            }}/>
+          </button>
+        </div>
+        {help && <div style={{fontSize:9,color:C.textDim,marginTop:1}}>{help}</div>}
+      </div>
+    );
+  }
+
   // Text fields (names, etc) — render as plain text input, no slider
   if (f === "text") return (
     <div style={{padding:"5px 0",borderBottom:`1px solid ${C.border}15`}}>
@@ -38,7 +65,7 @@ const InputRow = ({field, value, onChange}) => {
           {label}
         </span>
         {editing ? (
-          <input value={textVal} onChange={e=>setTextVal(e.target.value)}
+          <input type="number" value={textVal} onChange={e=>setTextVal(e.target.value)}
             onBlur={commitEdit} onKeyDown={e=>e.key==="Enter"&&commitEdit()}
             autoFocus
             style={{width:80,background:C.bg,color:C.blue,border:`1px solid ${C.blue}`,
