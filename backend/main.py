@@ -8,7 +8,7 @@ Usage:
 """
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List, Tuple
 import time
 import secrets
@@ -290,6 +290,30 @@ class SimulationInputs(BaseModel):
 
     # ── Initial one-time (Excel cached value) ──
     initial_onetime: float = 5000
+
+    @model_validator(mode="after")
+    def validate_inputs(self):
+        if self.retire_age <= self.start_age:
+            raise ValueError(f"retire_age ({self.retire_age}) must be greater than start_age ({self.start_age})")
+        if not (0 <= self.mort_rate <= 0.15):
+            raise ValueError(f"mort_rate ({self.mort_rate}) must be between 0 and 0.15")
+        if not (0 <= self.inflation <= 0.10):
+            raise ValueError(f"inflation ({self.inflation}) must be between 0 and 0.10")
+        if not (0 <= self.k401_pct <= 1.0):
+            raise ValueError(f"k401_pct ({self.k401_pct}) must be between 0 and 1.0")
+        if not (0 <= self.down_pct <= 1.0):
+            raise ValueError(f"down_pct ({self.down_pct}) must be between 0 and 1.0")
+        if not (0 <= self.inv_return <= 0.30):
+            raise ValueError(f"inv_return ({self.inv_return}) must be between 0 and 0.30")
+        if not (0 <= self.state_tax_rate <= 0.15):
+            raise ValueError(f"state_tax_rate ({self.state_tax_rate}) must be between 0 and 0.15")
+        if self.ss_age < 62 or self.ss_age > 72:
+            raise ValueError(f"ss_age ({self.ss_age}) must be between 62 and 72")
+        if self.mort_years not in (15, 20, 25, 30):
+            raise ValueError(f"mort_years ({self.mort_years}) must be 15, 20, 25, or 30")
+        if self.num_kids < 0 or self.num_kids > 5:
+            raise ValueError(f"num_kids ({self.num_kids}) must be between 0 and 5")
+        return self
 
 
 class SimulationResponse(BaseModel):
