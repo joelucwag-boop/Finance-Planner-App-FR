@@ -1,0 +1,10 @@
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.env.local
+.env.*.local
+*.log
+.DS_Store
+backend/__installed__
+backend/.installed

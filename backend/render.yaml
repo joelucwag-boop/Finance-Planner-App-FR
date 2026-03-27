@@ -1,0 +1,17 @@
+# Render Blueprint — one-click deploy
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: joseph-finance-engine
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: ALLOWED_ORIGINS
+        # Set this to your Vercel frontend URL after deploying the frontend
+        value: "*"
+    healthCheckPath: /health
+    autoDeploy: true

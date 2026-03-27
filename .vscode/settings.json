@@ -1,0 +1,10 @@
+{
+  "python.defaultInterpreterPath": "python3",
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.jsx": "javascriptreact"
+  },
+  "emmet.includeLanguages": {
+    "javascriptreact": "html"
+  }
+}
