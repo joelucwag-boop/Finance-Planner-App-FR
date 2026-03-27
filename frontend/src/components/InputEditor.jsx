@@ -4,20 +4,26 @@ import { C, BASE, INPUT_SECTIONS, STORAGE_KEY, SCENARIO_STORAGE_KEY, SCENARIO_CO
 import { runMonthlyEngine, ENGINE_BASELINE_BY_YR, computeScenarioNW } from '../engine.js';
 import InputSection from './InputSection.jsx';
 
-const InputEditor = () => {
+const InputEditor = ({ planInputs, onSave, planSaving }) => {
   const [inputs, setInputs] = useState({...BASE});
   const [openSections, setOpenSections] = useState(new Set(["you","job"]));
   const [saveStatus, setSaveStatus] = useState("idle"); // idle | saving | saved | loaded
   const [lastSaved, setLastSaved] = useState(null);
 
-  // Load saved inputs on mount
+  // Load plan inputs from backend when available, else from local storage
   useEffect(() => {
+    if (planInputs && Object.keys(planInputs).length > 0) {
+      setInputs(prev => ({...BASE, ...planInputs}));
+      setSaveStatus("loaded");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+      return;
+    }
+    // Fallback: load from local storage for anon users
     (async () => {
       try {
         const result = await _store.get(STORAGE_KEY);
         if (result?.value) {
           const saved = JSON.parse(result.value);
-          // Merge with BASE so new fields get defaults
           setInputs(prev => ({...BASE, ...saved.inputs}));
           setLastSaved(saved.savedAt);
           setSaveStatus("loaded");
@@ -25,18 +31,21 @@ const InputEditor = () => {
         }
       } catch (e) { /* no saved data yet, that's fine */ }
     })();
-  }, []);
+  }, [planInputs]);
 
   const set = (key, val) => setInputs(prev => ({...prev, [key]: val}));
 
-  // Save to persistent storage
+  // Save to persistent storage + backend
   const save = async () => {
     setSaveStatus("saving");
     try {
       const ts = new Date().toISOString();
+      // Save to local storage as fallback
       await _store.set(STORAGE_KEY, JSON.stringify({
         inputs, savedAt: ts, version: "v13",
       }));
+      // Also save to backend if callback provided
+      if (onSave) onSave(inputs);
       setLastSaved(ts);
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2500);
@@ -49,6 +58,7 @@ const InputEditor = () => {
   const reset = async () => {
     setInputs({...BASE});
     try { await _store.delete(STORAGE_KEY); } catch(e) {}
+    if (onSave) onSave({...BASE});
     setSaveStatus("idle");
     setLastSaved(null);
   };
@@ -205,8 +215,9 @@ const InputEditor = () => {
     return row;
   });
 
-  const statusColors = {saving:C.amber, saved:C.green, loaded:C.cyan, idle:C.textDim};
-  const statusText = {saving:"Saving...", saved:"Saved ✓", loaded:"Loaded from storage", idle:""};
+  const effectiveStatus = planSaving ? "syncing" : saveStatus;
+  const statusColors = {saving:C.amber, saved:C.green, loaded:C.cyan, idle:C.textDim, syncing:C.amber};
+  const statusText = {saving:"Saving...", saved:"Saved ✓", loaded:"Loaded from plan", idle:"", syncing:"Syncing..."};
 
   return (
     <div>
@@ -227,9 +238,9 @@ const InputEditor = () => {
               <h3 style={{margin:0,fontSize:14,fontWeight:700}}>📋 My Plan</h3>
             </div>
             <div style={{display:"flex",gap:5,alignItems:"center"}}>
-              {saveStatus !== "idle" && (
-                <span style={{fontSize:10,color:statusColors[saveStatus],fontWeight:600}}>
-                  {statusText[saveStatus]}
+              {effectiveStatus !== "idle" && (
+                <span style={{fontSize:10,color:statusColors[effectiveStatus],fontWeight:600}}>
+                  {statusText[effectiveStatus]}
                 </span>
               )}
               <button onClick={save} style={{
