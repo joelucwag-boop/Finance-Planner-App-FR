@@ -8,3 +8,4 @@ __pycache__/
 .DS_Store
 backend/__installed__
 backend/.installed
+*.db
