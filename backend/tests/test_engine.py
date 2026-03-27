@@ -31,7 +31,7 @@ class TestBaseline:
         assert last[1] == 12
 
     def test_terminal_net_worth(self):
-        """2069 NW should be $8,507,266 ± $1 (regression anchor)."""
+        """2069 NW should be $8,507,266 \u00b1 $1 (regression anchor)."""
         final_yr = self.yearly[-1]
         assert final_yr["yr"] == 2069
         assert abs(final_yr["nw"] - 8507266) <= 1

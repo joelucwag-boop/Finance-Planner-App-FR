@@ -1,6 +1,6 @@
 """
 Auth + Plan CRUD + Sharing integration tests.
-Full flow: register → login → me → plans → share → delete.
+Full flow: register \u2192 login \u2192 me \u2192 plans \u2192 share \u2192 delete.
 """
 import pytest
 import time
